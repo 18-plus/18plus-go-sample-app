@@ -1,0 +1,11 @@
+{
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appID": "9T998Y5SDU.com.reallyme.app",
+                "paths": ["*"]
+            }
+        ]
+    }
+}
