@@ -19,6 +19,10 @@ import (
 	"github.com/skip2/go-qrcode"
 )
 
+// that app has not tested with HTTPS
+// Adjust SERVER_NAME_CHANGE_IT to make URLs work.
+//
+
 var (
 	// key must be 16, 24 or 32 bytes long (AES-128, AES-192 or AES-256)
 	key         = []byte("super-secret-key")
