@@ -5,11 +5,14 @@ import (
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"html/template"
 	"net/http"
 	"net/url"
 	"sync"
+
+	"github.com/18-plus/go-sdk/gbipcheck"
 
 	"github.com/CossackPyra/pyraconv"
 
@@ -28,7 +31,7 @@ var (
 	key         = []byte("super-secret-key")
 	store       = sessions.NewCookieStore(key)
 	db          = InitPassDB()
-	AgeCheckURL = "https://deep.reallyme.net/agecheck"
+	AgeCheckURL = "https://applink.18plus.org/agecheck"
 	ReturnURL   = "http://SERVER_NAME_CHANGE_IT:9280/"
 	PostbackURL = "http://SERVER_NAME_CHANGE_IT:9280/api"
 	CookieName  = "cookie-name"
@@ -37,6 +40,7 @@ var (
 	Postback    = "postback"
 	JWT_PUB     = "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUF6YjRtcjhqcHh3NXJSU2pqK1NEQQo2cG9GNlFmaXp4dEtUZlVWQTYwTG1XTXJQeS93MWF4KzBsb1lxWWRYT2lVRmhETWhSQ2JiQjVaTmhzcDFEbklnCm03NTdVMldIaXJhOVFQcUNXTmo4Ymo0L1dxN0FwT3hFT0ZQVWFLeTVZZlRjaWQxU3VLWHpZNDNWa21NYUdUYnUKOXFJTWRzcitHU2lTTmdzZlNEcVNIeG4wL0Z5aFFkZTcwbWZjMTh1V3h5ZGVXTm5hRkhjeUZpMWFsbWUyZGREZQpHSlRta043YkZUT2ZHZXM5RkdDZWZzckI3MDRMcE8wcHo2ZjhHNlhsVmZQb0IwY2liWno3SlpHU0g5bHB1RkVkCm5MM2RVRFdvL3BBNzR3REJsSncrVThZWkN3eG1jeFZLVWRwejV1ZUJOMGc1WnN0czhjQjV6Y2V2aHZHSUIzazMKOVFJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=="
 	verifyKey   *rsa.PublicKey
+	ukIP        = flag.String("uk-ip", "", "Add following IP to UK IP range")
 )
 
 type PassDB struct {
@@ -83,7 +87,21 @@ func (p *PassDB) Debug() (result []byte) {
 // porn
 // api
 
+func isUK(ip string) (result bool) {
+
+	if ukIP != nil {
+		if *ukIP == ip {
+			return true
+		}
+	}
+
+	return gbipcheck.IsGB(ip)
+
+} // END func checkIP
+
 func main() {
+
+	flag.Parse()
 
 	var err error
 	verifyBytes, err := base64.StdEncoding.DecodeString(JWT_PUB)
@@ -99,7 +117,7 @@ func main() {
 	mux1 := http.NewServeMux()
 
 	mux1.HandleFunc("/", hIndex)
-	mux1.HandleFunc("/porn", hPorn)
+	mux1.HandleFunc("/18plus", h18plus)
 	mux1.HandleFunc("/api", hApi)
 	mux1.HandleFunc("/qr", hQr)
 	mux1.HandleFunc("/logout", hLogout)
@@ -150,7 +168,7 @@ func hIndex(w http.ResponseWriter, r *http.Request) {
 				<a href="{{ .URL }}">{{ .URL }}</a>
 			</p>
 			<p>
-				<a href="{{ .Porn }}">{{ .Porn }}</a>
+			<a href="{{ .Plus18 }}">{{ .Plus18 }}</a>
 			</p>
 			<p>
 				<a href="{{ .Logout }}">{{ .Logout }}</a>
@@ -173,7 +191,7 @@ func hIndex(w http.ResponseWriter, r *http.Request) {
 		map[string]interface{}{
 			"Image":  "qr",
 			"URL":    u1,
-			"Porn":   "/porn",
+			"Plus18": "/18plus",
 			"Logout": "/logout",
 			"Debug":  "/debug",
 		},
@@ -184,7 +202,7 @@ func hIndex(w http.ResponseWriter, r *http.Request) {
 
 } // END func hIndex
 
-func hPorn(w http.ResponseWriter, r *http.Request) {
+func h18plus(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, CookieName)
 	w.Header().Set("Cache-Control", "no-store")
 
@@ -200,7 +218,7 @@ func hPorn(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Forbidden", http.StatusForbidden)
 	}
 
-} // END func hFast
+} // END func h18plus
 
 func hApi(w http.ResponseWriter, r *http.Request) {
 	// session, _ := store.Get(r, "cookie-name")

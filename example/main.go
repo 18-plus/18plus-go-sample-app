@@ -99,7 +99,7 @@ func main() {
 	mux1 := http.NewServeMux()
 
 	mux1.HandleFunc("/", hIndex)
-	mux1.HandleFunc("/porn", hPorn)
+	mux1.HandleFunc("/18plus", h18plus)
 	mux1.HandleFunc("/api", hApi)
 	mux1.HandleFunc("/qr", hQr)
 	mux1.HandleFunc("/logout", hLogout)
@@ -150,7 +150,7 @@ func hIndex(w http.ResponseWriter, r *http.Request) {
 				<a href="{{ .URL }}">{{ .URL }}</a>
 			</p>
 			<p>
-				<a href="{{ .Porn }}">{{ .Porn }}</a>
+				<a href="{{ .Plus18 }}">{{ .Plus18 }}</a>
 			</p>
 			<p>
 				<a href="{{ .Logout }}">{{ .Logout }}</a>
@@ -173,7 +173,7 @@ func hIndex(w http.ResponseWriter, r *http.Request) {
 		map[string]interface{}{
 			"Image":  "qr",
 			"URL":    u1,
-			"Porn":   "/porn",
+			"Plus18": "/18plus",
 			"Logout": "/logout",
 			"Debug":  "/debug",
 		},
@@ -184,7 +184,7 @@ func hIndex(w http.ResponseWriter, r *http.Request) {
 
 } // END func hIndex
 
-func hPorn(w http.ResponseWriter, r *http.Request) {
+func h18plus(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, CookieName)
 	w.Header().Set("Cache-Control", "no-store")
 
@@ -200,7 +200,7 @@ func hPorn(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Forbidden", http.StatusForbidden)
 	}
 
-} // END func hFast
+} // END func h18plus
 
 func hApi(w http.ResponseWriter, r *http.Request) {
 	// session, _ := store.Get(r, "cookie-name")
